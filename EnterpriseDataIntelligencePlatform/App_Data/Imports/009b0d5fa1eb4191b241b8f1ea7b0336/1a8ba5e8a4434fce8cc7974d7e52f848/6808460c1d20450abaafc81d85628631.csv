@@ -1,0 +1,2 @@
+EmployeeId,Name,Email,Salary,Status
+E000,Initial User,initial.user@example.com,50000,ACTIVE

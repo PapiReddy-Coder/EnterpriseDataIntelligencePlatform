@@ -1,0 +1,12 @@
+namespace EnterpriseDataIntelligencePlatform.Contracts;
+public sealed record LoginRequest(string Email,string Password);
+public sealed record RefreshRequest(string RefreshToken);
+public sealed record TokenResponse(string AccessToken,string RefreshToken,DateTime AccessTokenExpiresAtUtc,DateTime RefreshTokenExpiresAtUtc);
+public sealed record CreateWorkspaceRequest(string Name,string Code);
+public sealed record UpdateWorkspaceRequest(string Name,string Code);
+public sealed record CreateUserRequest(string Email,string FullName,string Password,Guid? WorkspaceId,string Role);
+public sealed record AssignRoleRequest(string Role);
+public sealed record ChangePasswordRequest(string CurrentPassword,string NewPassword);
+public sealed record ForgotPasswordRequest(string Email);
+public sealed record ResetPasswordRequest(string Email,string Token,string NewPassword);
+public sealed record PagedResponse<T>(IReadOnlyList<T> Items,int Page,int PageSize,int TotalCount);

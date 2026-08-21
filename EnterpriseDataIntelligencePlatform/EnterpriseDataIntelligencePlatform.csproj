@@ -1,0 +1,49 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+
+		<RootNamespace>EnterpriseDataIntelligencePlatform</RootNamespace>
+
+		<UserSecretsId>
+			EnterpriseDataIntelligencePlatform-Development
+		</UserSecretsId>
+
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<NoWarn>$(NoWarn);1591</NoWarn>
+
+		<!-- App_Data/Imports contains runtime uploads, not source files. Excluding
+		     it prevents MSBuild from treating deeply nested uploaded files as
+		     project items and hitting Windows MAX_PATH during evaluation. -->
+		<DefaultItemExcludes>$(DefaultItemExcludes);App_Data\Imports\**</DefaultItemExcludes>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.22" />
+
+		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.22" />
+
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.22" />
+
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.22">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>
+				runtime;build;native;contentfiles;analyzers;buildtransitive
+			</IncludeAssets>
+		</PackageReference>
+
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.22">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>
+				runtime;build;native;contentfiles;analyzers;buildtransitive
+			</IncludeAssets>
+		</PackageReference>
+
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+		<PackageReference Include="DocumentFormat.OpenXml" Version="3.1.1" />
+	</ItemGroup>
+
+</Project>

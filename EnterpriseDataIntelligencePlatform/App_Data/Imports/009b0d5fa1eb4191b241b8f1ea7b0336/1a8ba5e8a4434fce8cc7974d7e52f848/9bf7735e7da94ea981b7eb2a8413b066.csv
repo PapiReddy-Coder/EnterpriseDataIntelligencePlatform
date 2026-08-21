@@ -1,0 +1,4 @@
+EmployeeId,Name,Email,Salary,Status
+E001, Alice Smith ,ALICE@EXAMPLE.COM,75000,active
+BAD,,not-an-email,abc,BLOCKED
+E001,Duplicate User,duplicate@example.com,90000,ACTIVE
