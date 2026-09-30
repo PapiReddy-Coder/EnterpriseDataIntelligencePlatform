@@ -1,0 +1,76 @@
+{
+  "info": {
+    "name": "Enterprise Data Intelligence - Governance & Access Policy",
+    "description": "End-to-end governance, certification, access request, approval, revocation, history, search and dashboard scenarios.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+  "variable": [
+    { "key": "baseUrl", "value": "https://localhost:7001" },
+    { "key": "token", "value": "" },
+    { "key": "requesterToken", "value": "" },
+    { "key": "datasetId", "value": "" },
+    { "key": "ownerId", "value": "" },
+    { "key": "stewardId", "value": "" },
+    { "key": "certificationId", "value": "" },
+    { "key": "accessRequestId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "1. Create or update governance metadata",
+      "request": {
+        "method": "PUT", "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{baseUrl}}/api/governance/datasets/{{datasetId}}",
+        "body": { "mode": "raw", "raw": "{\n  \"dataStewardId\": \"{{stewardId}}\",\n  \"businessDescription\": \"Curated employee dataset for approved workforce reporting.\",\n  \"governanceStatus\": \"Draft\",\n  \"classification\": \"Internal\",\n  \"lastReviewedDateUtc\": null,\n  \"nextReviewDateUtc\": null\n}" }
+      }
+    },
+    { "name": "2. Get governance details", "request": { "method": "GET", "url": "{{baseUrl}}/api/governance/datasets/{{datasetId}}" } },
+    {
+      "name": "3. Mark dataset Confidential",
+      "request": { "method": "PATCH", "header": [{ "key": "Content-Type", "value": "application/json" }], "url": "{{baseUrl}}/api/governance/datasets/{{datasetId}}/classification", "body": { "mode": "raw", "raw": "{ \"classification\": \"Confidential\" }" } }
+    },
+    {
+      "name": "4. Assign owner and steward",
+      "request": { "method": "PATCH", "header": [{ "key": "Content-Type", "value": "application/json" }], "url": "{{baseUrl}}/api/governance/datasets/{{datasetId}}/steward", "body": { "mode": "raw", "raw": "{ \"dataOwnerId\": \"{{ownerId}}\", \"dataStewardId\": \"{{stewardId}}\" }" } }
+    },
+    {
+      "name": "5. Submit for certification",
+      "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "url": "{{baseUrl}}/api/governance/datasets/{{datasetId}}/certifications", "body": { "mode": "raw", "raw": "{ \"comments\": \"Quality and lineage checks completed.\" }" } },
+      "event": [{ "listen": "test", "script": { "exec": ["if (pm.response.code === 201) pm.collectionVariables.set('certificationId', pm.response.json().id);"] } }]
+    },
+    {
+      "name": "6. Approve certification",
+      "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "url": "{{baseUrl}}/api/governance/certifications/{{certificationId}}/review", "body": { "mode": "raw", "raw": "{ \"approve\": true, \"reviewExpiryDateUtc\": \"2027-09-15T00:00:00Z\", \"comments\": \"Certified after governance review.\" }" } }
+    },
+    { "name": "7. Certification history", "request": { "method": "GET", "url": "{{baseUrl}}/api/governance/datasets/{{datasetId}}/certifications" } },
+    {
+      "name": "8. Request Read access",
+      "request": {
+        "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{requesterToken}}", "type": "text" }],
+        "url": "{{baseUrl}}/api/governance/datasets/{{datasetId}}/access-requests",
+        "body": { "mode": "raw", "raw": "{ \"requestedAccessLevel\": \"Read\", \"businessJustification\": \"Required for monthly operational reporting.\", \"requestedExpiryDateUtc\": \"2027-03-31T00:00:00Z\" }" }
+      },
+      "event": [{ "listen": "test", "script": { "exec": ["if (pm.response.code === 201) pm.collectionVariables.set('accessRequestId', pm.response.json().id);"] } }]
+    },
+    {
+      "name": "9. Approve access request",
+      "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "url": "{{baseUrl}}/api/governance/access-requests/{{accessRequestId}}/review", "body": { "mode": "raw", "raw": "{ \"approve\": true, \"expiryDateUtc\": \"2027-03-31T00:00:00Z\", \"comments\": \"Approved for reporting use.\" }" } }
+    },
+    { "name": "10. Filter pending requests", "request": { "method": "GET", "url": "{{baseUrl}}/api/governance/access-requests?status=Pending&page=1&pageSize=20" } },
+    { "name": "11. Access request history", "request": { "method": "GET", "url": "{{baseUrl}}/api/governance/access-requests/{{accessRequestId}}/history" } },
+    {
+      "name": "12. Revoke approved access",
+      "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "url": "{{baseUrl}}/api/governance/access-requests/{{accessRequestId}}/revoke", "body": { "mode": "raw", "raw": "{ \"reason\": \"Business need has ended.\" }" } }
+    },
+    { "name": "13. Search governance records", "request": { "method": "GET", "url": "{{baseUrl}}/api/governance/datasets?classification=Confidential&governanceStatus=Certified&page=1&pageSize=20" } },
+    { "name": "14. Governance dashboard", "request": { "method": "GET", "url": "{{baseUrl}}/api/governance/dashboard" } },
+    {
+      "name": "15. Negative - invalid classification",
+      "request": { "method": "PATCH", "header": [{ "key": "Content-Type", "value": "application/json" }], "url": "{{baseUrl}}/api/governance/datasets/{{datasetId}}/classification", "body": { "mode": "raw", "raw": "{ \"classification\": \"Secret\" }" } }
+    },
+    {
+      "name": "16. Negative - self approval",
+      "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{requesterToken}}", "type": "text" }], "url": "{{baseUrl}}/api/governance/access-requests/{{accessRequestId}}/review", "body": { "mode": "raw", "raw": "{ \"approve\": true, \"comments\": \"Must be rejected as self-approval.\" }" } }
+    }
+  ]
+}

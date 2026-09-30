@@ -1,0 +1,221 @@
+{
+  "info": {
+    "name": "Task 23 - Data Sharing, Export & Secure Delivery",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://localhost:62725"
+    },
+    {
+      "key": "token",
+      "value": ""
+    },
+    {
+      "key": "datasetId",
+      "value": ""
+    },
+    {
+      "key": "datasetVersionId",
+      "value": ""
+    },
+    {
+      "key": "recipientUserId",
+      "value": ""
+    },
+    {
+      "key": "exportId",
+      "value": ""
+    },
+    {
+      "key": "grantId",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "Create synchronous CSV export",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/data-sharing/exports",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"datasetId\": \"{{datasetId}}\",\n  \"datasetVersionId\": \"{{datasetVersionId}}\",\n  \"format\": \"CSV\",\n  \"columnIds\": [],\n  \"filters\": [\n    {\n      \"column\": \"Status\",\n      \"operator\": \"eq\",\n      \"value\": \"Active\"\n    }\n  ],\n  \"sorts\": [\n    {\n      \"column\": \"EmployeeId\",\n      \"direction\": \"asc\"\n    }\n  ]\n}"
+        }
+      }
+    },
+    {
+      "name": "Create Excel export",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/data-sharing/exports",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"datasetId\": \"{{datasetId}}\",\n  \"format\": \"Excel\",\n  \"columnIds\": [],\n  \"filters\": [],\n  \"sorts\": []\n}"
+        }
+      }
+    },
+    {
+      "name": "Get export status",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/data-sharing/exports/{{exportId}}"
+      }
+    },
+    {
+      "name": "Cancel export",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/data-sharing/exports/{{exportId}}/cancel"
+      }
+    },
+    {
+      "name": "Download export",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/data-sharing/exports/{{exportId}}/download"
+      }
+    },
+    {
+      "name": "Export history",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/data-sharing/exports?page=1&pageSize=20&status=Completed"
+      }
+    },
+    {
+      "name": "Export dashboard",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/data-sharing/exports/dashboard"
+      }
+    },
+    {
+      "name": "Share dataset",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/data-sharing/shares",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"datasetId\": \"{{datasetId}}\",\n  \"recipientUserId\": \"{{recipientUserId}}\",\n  \"accessLevel\": \"Read\",\n  \"expiryDateUtc\": null\n}"
+        }
+      }
+    },
+    {
+      "name": "Update dataset share",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/data-sharing/shares/{{grantId}}",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"datasetId\": \"{{datasetId}}\",\n  \"recipientUserId\": \"{{recipientUserId}}\",\n  \"accessLevel\": \"Write\",\n  \"expiryDateUtc\": null\n}"
+        }
+      }
+    },
+    {
+      "name": "Revoke dataset share",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/data-sharing/shares/{{grantId}}/revoke",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"reason\": \"Access no longer required.\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Share history",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/data-sharing/shares?page=1&pageSize=20"
+      }
+    }
+  ]
+}
